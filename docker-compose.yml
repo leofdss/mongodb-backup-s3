@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  mongo:
+    image: mongo:4
+    restart: always
+    env_file:
+      - ./.env     
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo_database:/data/db:z
+    networks:
+      - database
+
+  mongo_bkp:
+    image: mongo_bkp
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    depends_on:
+      - mongo
+    networks:
+      - database
+
+networks:
+  database:
+    driver: bridge
