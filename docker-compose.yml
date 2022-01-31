@@ -15,6 +15,7 @@ services:
 
   mongo_bkp:
     image: mongo_bkp
+    restart: always
     build: 
       context: .
       dockerfile: Dockerfile
