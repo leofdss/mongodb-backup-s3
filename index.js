@@ -124,18 +124,20 @@ function mongo_dump() {
 /**
  * 
  * @param {string} prefix 
- * @returns {Promise<PromiseResult<aws_sdk.S3.ListObjectsOutput, aws_sdk.AWSError>>}
+ * @returns {Promise<AWS.S3.ObjectList | undefined>}
  */
 function listFilesS3(
     prefix
 ) {
     const s3 = new aws_sdk.S3({ apiVersion: config.s3.apiVersion });
-    return s3
-        .listObjects({
-            Bucket: config.s3.bucket,
-            Prefix: prefix,
-        })
-        .promise();
+    return (
+        await s3
+            .listObjects({
+                Bucket: environment.aws.bucket,
+                Prefix: prefix,
+            })
+            .promise()
+    ).Contents;
 }
 
 /**
@@ -189,21 +191,21 @@ async function main() {
     const list = await listFilesS3('Backup/mongodb');
 
     if (Array.isArray(list)) {
-      if (list.length > 5) {
-        const sort = list.sort((a, b) => {
-          const aDate = new Date(a?.LastModified ?? '');
-          const bDate = new Date(b?.LastModified ?? '');
-          if (aDate > bDate) {
-            return 1;
-          } else {
-            return -1;
-          }
-        });
+        if (list.length > 5) {
+            const sort = list.sort((a, b) => {
+                const aDate = new Date(a?.LastModified ?? '');
+                const bDate = new Date(b?.LastModified ?? '');
+                if (aDate > bDate) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
 
-        if (sort[0]?.Key) {
-          await deleteFileS3(sort[0]?.Key);
+            if (sort[0]?.Key) {
+                await deleteFileS3(sort[0]?.Key);
+            }
         }
-      }
     }
 
     console.log('-------- clear old backup done --------');
