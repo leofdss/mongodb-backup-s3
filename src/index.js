@@ -54,9 +54,9 @@ async function main() {
 }
 
 
-main()
-    .then(() => console.log('-------- done --------'))
-    .catch((err) => console.log(err));
-// cron.schedule('0 0 0 * * *', () => {
-// });
+cron.schedule('0 0 0 * * *', () => {
+    main()
+        .then(() => console.log('-------- done --------'))
+        .catch((err) => console.log(err));
+});
 

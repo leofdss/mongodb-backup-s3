@@ -156,7 +156,7 @@ async function listFilesS3(
  * @param {string} key 
  * @returns {Promise<PromiseResult<aws_sdk.S3.DeleteObjectOutput, aws_sdk.AWSError>>}
  */
-function deleteFileS3(
+async function deleteFileS3(
     key
 ) {
     const s3 = new aws_sdk.S3({ apiVersion: config.s3.apiVersion });
@@ -238,7 +238,7 @@ async function clearOldS3() {
                 break;
             }
         }
-        if(deleteItem) {
+        if (deleteItem) {
             await deleteFileS3(item.Key);
         }
     }
